@@ -1,0 +1,20 @@
+{
+  "name": "catch-game",
+  "version": "1.0.0",
+  "description": "4人在线追逐游戏 - 小鸡躲避老鹰",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "keywords": ["game", "multiplayer", "socket.io", "maze"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

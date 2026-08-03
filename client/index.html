@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>小鸡快跑 - 4人追逐游戏</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 游戏容器 -->
+    <div id="game-container">
+        <!-- 登录界面 -->
+        <div id="login-screen" class="screen">
+            <h1>小鸡快跑</h1>
+            <p>4人在线追逐游戏</p>
+            <div class="input-group">
+                <input type="text" id="player-name" placeholder="请输入你的名字" maxlength="10">
+            </div>
+            <button id="join-btn">加入游戏</button>
+            <div class="game-info">
+                <h3>游戏规则</h3>
+                <ul>
+                    <li>4人游戏：1只小鸡 vs 3只老鹰</li>
+                    <li>小鸡先跑5秒，然后老鹰开始追逐</li>
+                    <li>小鸡可以看到全貌和老鹰位置</li>
+                    <li>老鹰只能看到地图，看不到小鸡</li>
+                    <li>5分钟内老鹰抓到小鸡则老鹰胜</li>
+                    <li>5分钟内没抓到则小鸡胜</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 等待界面 -->
+        <div id="waiting-screen" class="screen hidden">
+            <h2>等待玩家加入</h2>
+            <div id="player-count">当前人数: <span id="current-count">0</span> / <span id="max-count">4</span></div>
+            <div id="waiting-players"></div>
+            <div class="waiting-message">等待其他玩家加入...</div>
+            <button id="start-game-btn" class="hidden">开始游戏</button>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div id="game-screen" class="screen hidden">
+            <!-- 游戏信息栏 -->
+            <div id="game-info-bar">
+                <div id="role-display">角色: <span id="role-text">-</span></div>
+                <div id="timer-display">时间: <span id="timer-text">5:00</span></div>
+                <div id="status-display">状态: <span id="status-text">等待中</span></div>
+            </div>
+            
+            <!-- 游戏画布 -->
+            <canvas id="game-canvas"></canvas>
+            
+            <!-- 游戏提示 -->
+            <div id="game-hint" class="hidden"></div>
+            
+            <!-- 移动端控制按钮 -->
+            <div id="mobile-controls" class="hidden">
+                <div class="dpad">
+                    <button class="dpad-btn dpad-up" id="btn-up" aria-label="上"></button>
+                    <button class="dpad-btn dpad-left" id="btn-left" aria-label="左"></button>
+                    <button class="dpad-btn dpad-center" aria-label="中心"></button>
+                    <button class="dpad-btn dpad-right" id="btn-right" aria-label="右"></button>
+                    <button class="dpad-btn dpad-down" id="btn-down" aria-label="下"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结束界面 -->
+        <div id="end-screen" class="screen hidden">
+            <h2 id="result-title">游戏结束</h2>
+            <div id="result-message"></div>
+            <div id="result-details"></div>
+            <button id="restart-btn">重新开始</button>
+        </div>
+    </div>
+
+    <!-- 脚本 -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/Network.js?v=2"></script>
+    <script src="js/InputHandler.js?v=2"></script>
+    <script src="js/Renderer.js?v=2"></script>
+    <script src="js/Game.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
+</body>
+</html>

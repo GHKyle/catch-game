@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>游戏测试</title>
+</head>
+<body>
+    <h1>游戏测试页面</h1>
+    <div id="status">未连接</div>
+    <div id="log"></div>
+    <input type="text" id="name" placeholder="输入名字">
+    <button onclick="joinGame()">加入游戏</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const logDiv = document.getElementById('log');
+        const statusDiv = document.getElementById('status');
+        
+        function log(msg) {
+            console.log(msg);
+            logDiv.innerHTML += msg + '<br>';
+        }
+        
+        const socket = io();
+        
+        socket.on('connect', () => {
+            statusDiv.textContent = '已连接: ' + socket.id;
+            log('连接成功: ' + socket.id);
+        });
+        
+        socket.on('disconnect', () => {
+            statusDiv.textContent = '已断开';
+            log('断开连接');
+        });
+        
+        socket.on('joinedRoom', (data) => {
+            log('加入房间成功: ' + JSON.stringify(data));
+        });
+        
+        socket.on('playerJoined', (data) => {
+            log('玩家加入: ' + JSON.stringify(data));
+        });
+        
+        socket.on('gameStarted', (data) => {
+            log('游戏开始: ' + JSON.stringify(data));
+            document.body.style.backgroundColor = 'green';
+        });
+        
+        socket.on('joinError', (data) => {
+            log('加入失败: ' + data.message);
+        });
+        
+        function joinGame() {
+            const name = document.getElementById('name').value || '测试';
+            log('发送joinGame: ' + name);
+            socket.emit('joinGame', { name: name });
+        }
+    </script>
+</body>
+</html>

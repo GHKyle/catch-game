@@ -1,0 +1,613 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    width: 100%;
+    max-width: 1200px;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 屏幕样式 */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    transition: opacity 0.3s ease;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+/* 登录界面 */
+#login-screen {
+    background: rgba(255, 255, 255, 0.95);
+    text-align: center;
+}
+
+#login-screen h1 {
+    font-size: 3rem;
+    color: #e74c3c;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#login-screen p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+#player-name {
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    width: 300px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+#player-name:focus {
+    border-color: #667eea;
+}
+
+#join-btn {
+    padding: 15px 50px;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#join-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.game-info {
+    margin-top: 40px;
+    text-align: left;
+    background: #f8f9fa;
+    padding: 20px 30px;
+    border-radius: 10px;
+    max-width: 400px;
+}
+
+.game-info h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.game-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.game-info li {
+    padding: 8px 0;
+    color: #555;
+    border-bottom: 1px solid #eee;
+}
+
+.game-info li:last-child {
+    border-bottom: none;
+}
+
+.game-info li::before {
+    content: "•";
+    color: #667eea;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* 等待界面 */
+#waiting-screen {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+#waiting-screen h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+#player-count {
+    font-size: 1.5rem;
+    color: #667eea;
+    margin-bottom: 30px;
+}
+
+#waiting-players {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.player-slot {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: #adb5bd;
+    transition: all 0.3s ease;
+}
+
+.player-slot.occupied {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.waiting-message {
+    font-size: 1.1rem;
+    color: #666;
+    animation: pulse 2s infinite;
+    margin-bottom: 20px;
+}
+
+#start-game-btn {
+    padding: 14px 50px;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: pulse 1.5s infinite;
+}
+
+#start-game-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(231, 76, 60, 0.5);
+}
+
+#start-game-btn.hidden {
+    display: none;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* 游戏界面 */
+#game-screen {
+    background: #1a1a2e;
+    padding: 0;
+}
+
+#game-info-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+#game-info-bar div {
+    color: white;
+    font-size: 1rem;
+}
+
+#role-text {
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 15px;
+}
+
+#role-text.chicken {
+    background: #f1c40f;
+    color: #333;
+}
+
+#role-text.eagle {
+    background: #e74c3c;
+    color: white;
+}
+
+#game-canvas {
+    display: block;
+    background: #16213e;
+}
+
+#game-hint {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    z-index: 20;
+}
+
+#game-hint.hidden {
+    display: none;
+}
+
+/* 游戏结束遮罩 */
+#game-end-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 15;
+    animation: fadeIn 0.3s ease;
+}
+
+#game-end-overlay.hidden {
+    display: none;
+}
+
+.end-overlay-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #f1c40f;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.end-overlay-message {
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.end-overlay-detail {
+    font-size: 1.1rem;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 移动端控制 - 十字方向键 */
+#mobile-controls {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    pointer-events: none;
+}
+
+.dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 5px;
+    width: 210px;
+    height: 210px;
+    pointer-events: auto;
+}
+
+.dpad-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-self: center;
+    align-self: center;
+    transition: background 0.1s ease;
+}
+
+.dpad-btn::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+}
+
+/* 方向箭头用 CSS 伪元素绘制 */
+.dpad-up::after {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 14px solid rgba(255,255,255,0.8);
+}
+
+.dpad-down::after {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 14px solid rgba(255,255,255,0.8);
+}
+
+.dpad-left::after {
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 14px solid rgba(255,255,255,0.8);
+}
+
+.dpad-right::after {
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 14px solid rgba(255,255,255,0.8);
+}
+
+.dpad-center {
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+}
+
+.dpad-btn:active {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.dpad-up {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.dpad-left {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.dpad-center {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.dpad-right {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.dpad-down {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+/* 结束界面 */
+#end-screen {
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+}
+
+#result-title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+#result-message {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+}
+
+#result-details {
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+#restart-btn {
+    padding: 15px 50px;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#restart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* 响应式设计 - 手机竖屏 */
+@media (max-width: 768px) {
+    #game-container {
+        max-width: 100%;
+    }
+
+    #login-screen h1 {
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+
+    #login-screen p {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    #player-name {
+        width: 250px;
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+
+    #join-btn {
+        padding: 12px 40px;
+        font-size: 1rem;
+    }
+
+    .game-info {
+        max-width: 300px;
+        padding: 12px 15px;
+        margin-top: 20px;
+    }
+
+    .game-info h3 {
+        font-size: 0.95rem;
+    }
+
+    .game-info li {
+        padding: 5px 0;
+        font-size: 0.85rem;
+    }
+
+    /* 等待界面 */
+    #waiting-screen h2 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    #player-count {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+
+    .player-slot {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    /* 游戏界面 */
+    #game-info-bar {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    #game-info-bar div {
+        font-size: 0.8rem;
+    }
+
+    #role-text {
+        padding: 3px 10px;
+        font-size: 0.8rem;
+    }
+
+    #mobile-controls {
+        display: block !important;
+        bottom: 55px;
+    }
+
+    .dpad {
+        width: 190px;
+        height: 190px;
+        gap: 4px;
+    }
+
+    .dpad-btn {
+        width: 56px;
+        height: 56px;
+    }
+
+    /* 结束界面 */
+    #result-title {
+        font-size: 2rem;
+    }
+
+    #result-message {
+        font-size: 1.1rem;
+    }
+
+    #result-details {
+        font-size: 0.95rem;
+    }
+
+    #restart-btn {
+        padding: 12px 40px;
+        font-size: 1rem;
+    }
+
+    .end-overlay-title {
+        font-size: 1.8rem;
+    }
+
+    .end-overlay-message {
+        font-size: 1.1rem;
+    }
+
+    .end-overlay-detail {
+        font-size: 0.95rem;
+    }
+}
+
+/* 手机横屏 */
+@media (max-height: 500px) and (orientation: landscape) {
+    #game-info-bar {
+        padding: 4px 12px;
+    }
+
+    #game-info-bar div {
+        font-size: 0.75rem;
+    }
+
+    #role-text {
+        padding: 2px 8px;
+        font-size: 0.75rem;
+    }
+
+    #mobile-controls {
+        bottom: 50px;
+    }
+
+    .dpad {
+        width: 160px;
+        height: 160px;
+        gap: 3px;
+    }
+
+    .dpad-btn {
+        width: 48px;
+        height: 48px;
+    }
+}

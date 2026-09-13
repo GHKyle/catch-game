@@ -62,7 +62,7 @@ class Maze {
 
     /**
      * 添加额外的路径，使迷宫更通达
-     * 策略：先BFS标记所有可达格子，然后优先打通隔离区域
+     * 策略：消除死胡同 + 随机破墙 + 开放广场
      */
     addExtraPaths() {
         const dirs = [[0, -1], [0, 1], [-1, 0], [1, 0]];
@@ -113,9 +113,8 @@ class Maze {
             this.grid[by][bx] = 0;
         }
 
-        // 第三步：消除死胡同（核心优化）
-        // 死胡同 = 只有1个方向可走的通道，打通旁边的墙消除它
-        for (let round = 0; round < 3; round++) {
+        // 第三步：消除死胡同（多轮迭代，彻底清除）
+        for (let round = 0; round < 5; round++) {
             const deadEnds = [];
             for (let y = 1; y < this.height - 1; y++) {
                 for (let x = 1; x < this.width - 1; x++) {
@@ -150,13 +149,12 @@ class Maze {
             }
         }
 
-        // 第四步：额外随机移除墙壁，大幅增加路径（从3%提高到12%）
-        const extraPaths = Math.floor(this.width * this.height * 0.12);
+        // 第四步：额外随机移除墙壁，增加路径（18%，更通达）
+        const extraPaths = Math.floor(this.width * this.height * 0.18);
         for (let i = 0; i < extraPaths; i++) {
             const x = Math.floor(Math.random() * (this.width - 2)) + 1;
             const y = Math.floor(Math.random() * (this.height - 2)) + 1;
             if (this.grid[y][x] === 1) {
-                // 确保旁边有通道
                 let hasAdjacentPath = false;
                 for (const [dx, dy] of dirs) {
                     const nx = x + dx;
@@ -168,6 +166,24 @@ class Maze {
                 }
                 if (hasAdjacentPath) {
                     this.grid[y][x] = 0;
+                }
+            }
+        }
+
+        // 第五步：创建几个小型开放广场（2x2~3x3），适合追逐周旋
+        const plazaCount = 3 + Math.floor(Math.random() * 3); // 3~5个广场
+        for (let i = 0; i < plazaCount; i++) {
+            const px = 2 + Math.floor(Math.random() * (this.width - 6));
+            const py = 2 + Math.floor(Math.random() * (this.height - 6));
+            const plazaW = 2 + Math.floor(Math.random() * 2); // 2~3宽
+            const plazaH = 2 + Math.floor(Math.random() * 2); // 2~3高
+            for (let dy = 0; dy < plazaH; dy++) {
+                for (let dx = 0; dx < plazaW; dx++) {
+                    const nx = px + dx;
+                    const ny = py + dy;
+                    if (nx >= 1 && nx < this.width - 1 && ny >= 1 && ny < this.height - 1) {
+                        this.grid[ny][nx] = 0;
+                    }
                 }
             }
         }

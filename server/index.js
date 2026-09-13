@@ -47,13 +47,19 @@ io.on('connection', (socket) => {
     socket.on('joinGame', (data) => {
         console.log(`joinGame event received from ${socket.id}:`, data);
         const playerName = data.name || '玩家';
+        const gameMode = data.gameMode || 'classic'; // 默认经典模式
         const room = getOrCreateRoom();
+        
+        // 只有房主或房间为空时才能设置游戏模式
+        if (!room.hostId || room.hostId === socket.id || room.players.size === 0) {
+            room.setGameMode(gameMode);
+        }
         
         // 先加入socket房间，再添加玩家（这样第4个玩家能收到gameStarted事件）
         socket.join(room.id);
         currentRoom = room;
         
-        console.log(`Adding ${playerName} to room ${room.id}`);
+        console.log(`Adding ${playerName} to room ${room.id}, mode: ${room.gameMode}`);
         
         // 先发送joinedRoom给玩家（避免第4个玩家因gameStarted先到而被joinedRoom覆盖）
         const playerCount = room.players.size + 1; // 预计算加入后的人数
@@ -63,7 +69,8 @@ io.on('connection', (socket) => {
             playerName,
             playerCount: playerCount,
             maxPlayers: room.maxPlayers,
-            hostId: room.hostId || socket.id
+            hostId: room.hostId || socket.id,
+            gameMode: room.gameMode
         });
 
         const result = room.addPlayer(socket.id, playerName);
@@ -72,7 +79,8 @@ io.on('connection', (socket) => {
             console.log(`玩家 ${playerName} 加入房间 ${room.id}`);
             // 通知房间内所有人更新房主信息
             io.to(room.id).emit('hostUpdate', {
-                hostId: room.hostId
+                hostId: room.hostId,
+                gameMode: room.gameMode
             });
         } else {
             console.log(`Failed to add ${playerName} to room: ${result.message}`);
@@ -91,8 +99,13 @@ io.on('connection', (socket) => {
     // 房主提前开始游戏
     socket.on('startGameEarly', () => {
         if (currentRoom && currentRoom.hostId === socket.id) {
-            if (currentRoom.players.size >= 2 && currentRoom.state === 'waiting') {
+            if (currentRoom.state !== 'waiting') return;
+            // 老鹰捉小鸡模式必须满4人才能开始，经典模式2人即可
+            const minPlayers = currentRoom.gameMode === 'eagle_hunt' ? 4 : 2;
+            if (currentRoom.players.size >= minPlayers) {
                 currentRoom.startGame();
+            } else {
+                socket.emit('joinError', { message: `至少需要${minPlayers}人才能开始游戏` });
             }
         }
     });

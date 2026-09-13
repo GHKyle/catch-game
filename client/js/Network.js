@@ -123,6 +123,18 @@ class Network {
             this.trigger('roomReset', data);
         });
 
+        // 小鸡被抓到（老鹰捉小鸡模式）
+        this.socket.on('chickenCaptured', (data) => {
+            console.log('小鸡被抓到:', data);
+            this.trigger('chickenCaptured', data);
+        });
+
+        // 小鸡逃跑（老鹰捉小鸡模式）
+        this.socket.on('chickenEscaped', (data) => {
+            console.log('小鸡逃跑:', data);
+            this.trigger('chickenEscaped', data);
+        });
+
         // 房间列表
         this.socket.on('roomList', (data) => {
             this.trigger('roomList', data);
@@ -137,14 +149,14 @@ class Network {
     /**
      * 加入游戏
      */
-    joinGame(playerName) {
-        console.log('joinGame called with:', playerName);
+    joinGame(playerName, gameMode = 'classic') {
+        console.log('joinGame called with:', playerName, gameMode);
         if (!this.connected) {
             console.error('未连接到服务器');
             return;
         }
         console.log('Sending joinGame event to server');
-        this.socket.emit('joinGame', { name: playerName });
+        this.socket.emit('joinGame', { name: playerName, gameMode });
     }
 
     /**

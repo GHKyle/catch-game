@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a1a">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>小鸡快跑 - 4人追逐游戏</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -14,13 +18,21 @@
             <h1>小鸡快跑</h1>
             <p>4人在线追逐游戏</p>
             <div class="input-group">
-                <input type="text" id="player-name" placeholder="请输入你的名字" maxlength="10">
+                <input type="text" id="player-name" placeholder="请输入你的名字" maxlength="10" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="game-mode">选择游戏模式</label>
+                <select id="game-mode">
+                    <option value="classic">经典模式（1鸡3鹰）</option>
+                    <option value="eagle_hunt">老鹰捉小鸡（1鹰3鸡）</option>
+                </select>
             </div>
             <button id="join-btn">加入游戏</button>
             <div class="game-info">
                 <h3>游戏规则</h3>
                 <ul>
-                    <li>4人游戏：1只小鸡 vs 3只老鹰</li>
+                    <li><strong>经典模式：</strong>1只小鸡 vs 3只老鹰</li>
+                    <li><strong>老鹰捉小鸡模式：</strong>1只老鹰 vs 3只小鸡</li>
                     <li>小鸡先跑5秒，然后老鹰开始追逐</li>
                     <li>小鸡可以看到全貌和老鹰位置</li>
                     <li>老鹰只能看到地图，看不到小鸡</li>
@@ -77,10 +89,10 @@
 
     <!-- 脚本 -->
     <script src="/socket.io/socket.io.js"></script>
-    <script src="js/Network.js?v=2"></script>
-    <script src="js/InputHandler.js?v=2"></script>
-    <script src="js/Renderer.js?v=2"></script>
-    <script src="js/Game.js?v=2"></script>
-    <script src="js/main.js?v=2"></script>
+    <script src="js/Network.js?v=3"></script>
+    <script src="js/InputHandler.js?v=3"></script>
+    <script src="js/Renderer.js?v=3"></script>
+    <script src="js/Game.js?v=3"></script>
+    <script src="js/main.js?v=3"></script>
 </body>
 </html>

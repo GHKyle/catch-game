@@ -18,6 +18,7 @@ class Game {
         this.revealCard = null; // 显示卡位置
         this.isHost = false; // 是否是房主
         this.playerCount = 0; // 当前房间人数
+        this.gameMode = 'classic'; // 游戏模式：classic 或 eagle_hunt
     }
 
     /**
@@ -77,12 +78,12 @@ class Game {
         setTimeout(function() {
             renderer.forceResize();
             renderer.render();
-        }, 100);
+        }, 150);
         
         setTimeout(function() {
             renderer.forceResize();
             renderer.render();
-        }, 500);
+        }, 600);
         
         // 启用输入
         inputHandler.enable();
@@ -133,6 +134,9 @@ class Game {
         // 房主更新
         network.on('hostUpdate', (data) => {
             this.isHost = (data.hostId === this.playerId);
+            if (data.gameMode) {
+                this.gameMode = data.gameMode;
+            }
             this.updateStartButton();
         });
 
@@ -145,6 +149,7 @@ class Game {
             this.players = data.players;
             this.gameDuration = data.gameDuration;
             this.revealCard = data.revealCard || null;
+            this.gameMode = data.gameMode || 'classic';
             
             // 设置渲染器
             if (typeof renderer !== 'undefined') {
@@ -155,10 +160,20 @@ class Game {
             }
             
             // 确定我的角色
-            if (data.chickenId === this.playerId) {
-                this.myRole = 'chicken';
-            } else {
-                this.myRole = 'eagle';
+            if (this.gameMode === 'classic') {
+                // 经典模式：检查是否是小鸡
+                if (data.chickenId === this.playerId) {
+                    this.myRole = 'chicken';
+                } else {
+                    this.myRole = 'eagle';
+                }
+            } else if (this.gameMode === 'eagle_hunt') {
+                // 老鹰捉小鸡模式：检查是否在小鸡列表中
+                if (data.chickenIds && data.chickenIds.includes(this.playerId)) {
+                    this.myRole = 'chicken';
+                } else {
+                    this.myRole = 'eagle';
+                }
             }
             
             console.log('My role:', this.myRole);
@@ -178,19 +193,22 @@ class Game {
                     renderer.forceResize();
                     renderer.render();
                 }
-            }, 100);
+            }, 150);
             
             setTimeout(function() {
                 if (typeof renderer !== 'undefined') {
                     renderer.forceResize();
                     renderer.render();
                 }
-            }, 500);
+            }, 600);
             
             // 启用输入
             if (typeof inputHandler !== 'undefined') {
                 inputHandler.enable();
             }
+            
+            // 更新游戏模式显示
+            this.updateGameModeDisplay();
             
             console.log('gameStarted处理完成');
         });
@@ -229,31 +247,42 @@ class Game {
             this.stopTimer();
             inputHandler.disable();
             
-            // 小鸡获胜时，显示小鸡在地图上的位置
-            if (data.winner === 'chicken') {
-                renderer.setChickenRevealed(true);
-                // 更新小鸡最终位置到客户端玩家数据
-                if (data.chickenPosition) {
-                    for (const playerId in this.players) {
-                        if (this.players[playerId].role === 'chicken') {
-                            this.players[playerId].x = data.chickenPosition.x;
-                            this.players[playerId].y = data.chickenPosition.y;
-                            break;
-                        }
+            // 游戏结束时，显示所有小鸡在地图上的位置
+            renderer.setChickenRevealed(true);
+            
+            // 老鹰获胜：更新被抓小鸡的最终位置
+            if (data.winner === 'eagle' && data.chickenPosition) {
+                for (const playerId in this.players) {
+                    if (this.players[playerId].role === 'chicken') {
+                        this.players[playerId].x = data.chickenPosition.x;
+                        this.players[playerId].y = data.chickenPosition.y;
+                        break;
                     }
-                    renderer.setPlayers(this.players);
                 }
+                renderer.setPlayers(this.players);
+            }
+            
+            // 小鸡获胜：更新小鸡最终位置
+            if (data.winner === 'chicken' && data.chickenPosition) {
+                for (const playerId in this.players) {
+                    if (this.players[playerId].role === 'chicken') {
+                        this.players[playerId].x = data.chickenPosition.x;
+                        this.players[playerId].y = data.chickenPosition.y;
+                        break;
+                    }
+                }
+                renderer.setPlayers(this.players);
             }
             
             // 在游戏画面上显示结果
             this.showGameEndOverlay(data);
             
-            // 3秒后切换到结束界面
+            // 5秒后切换到结束界面
             setTimeout(() => {
                 this.hideGameEndOverlay();
                 this.showScreen('end-screen');
                 this.updateEndUI(data);
-            }, 3000);
+            }, 5000);
         });
 
         // 显示卡被拾取，小鸡位置暴露
@@ -288,6 +317,36 @@ class Game {
             this.showScreen('login-screen');
             this.reset();
         });
+
+        // 小鸡被抓到（老鹰捉小鸡模式）
+        network.on('chickenCaptured', (data) => {
+            // 从玩家列表中移除被抓到的小鸡，使其消失
+            if (this.players[data.chickenId]) {
+                delete this.players[data.chickenId];
+                renderer.setPlayers(this.players);
+            }
+            // 如果是自己被抓到，显示被捕获提示并禁用输入
+            if (data.chickenId === this.playerId) {
+                renderer.drawHint('你被老鹰抓住了！游戏结束！');
+                inputHandler.disable();
+            } else {
+                // 显示提示信息
+                renderer.drawHint(`小鸡 ${data.chickenName} 被抓住了！剩余 ${data.remainingChickens} 只小鸡`);
+            }
+            console.log(`小鸡 ${data.chickenName} 被抓住了。剩余 ${data.remainingChickens} 只小鸡`);
+        });
+
+        // 小鸡逃跑（老鹰捉小鸡模式）
+        network.on('chickenEscaped', (data) => {
+            // 从玩家列表中移除逃跑的小鸡，使其消失
+            if (this.players[data.chickenId]) {
+                delete this.players[data.chickenId];
+                renderer.setPlayers(this.players);
+            }
+            // 显示提示信息
+            renderer.drawHint(`小鸡 ${data.chickenName} 逃跑了！剩余 ${data.remainingChickens} 只小鸡`);
+            console.log(`小鸡 ${data.chickenName} 逃跑了。剩余 ${data.remainingChickens} 只小鸡`);
+        });
     }
 
     /**
@@ -310,9 +369,12 @@ class Game {
         joinBtn.addEventListener('click', () => {
             const nameInput = document.getElementById('player-name');
             const name = nameInput.value.trim();
+            const modeSelect = document.getElementById('game-mode');
+            const mode = modeSelect ? modeSelect.value : 'classic';
             if (name) {
                 this.playerName = name;
-                network.joinGame(name);
+                this.gameMode = mode;
+                network.joinGame(name, mode);
             } else {
                 alert('请输入你的名字');
             }
@@ -407,7 +469,9 @@ class Game {
         const startBtn = document.getElementById('start-game-btn');
         if (!startBtn) return;
 
-        if (this.isHost && this.playerCount >= 2) {
+        // 老鹰捉小鸡模式需要满4人才能开始
+        const minPlayers = this.gameMode === 'eagle_hunt' ? 4 : 2;
+        if (this.isHost && this.playerCount >= minPlayers) {
             startBtn.classList.remove('hidden');
         } else {
             startBtn.classList.add('hidden');
@@ -428,6 +492,26 @@ class Game {
         
         if (statusText) {
             statusText.textContent = '游戏中';
+        }
+    }
+
+    /**
+     * 更新游戏模式显示
+     */
+    updateGameModeDisplay() {
+        // 在游戏信息栏添加游戏模式显示
+        const infoBar = document.getElementById('game-info-bar');
+        if (infoBar) {
+            // 检查是否已经存在模式显示
+            let modeDisplay = document.getElementById('mode-display');
+            if (!modeDisplay) {
+                modeDisplay = document.createElement('div');
+                modeDisplay.id = 'mode-display';
+                infoBar.insertBefore(modeDisplay, infoBar.firstChild);
+            }
+            
+            const modeText = this.gameMode === 'classic' ? '经典模式' : '老鹰捉小鸡模式';
+            modeDisplay.textContent = `模式: ${modeText}`;
         }
     }
 

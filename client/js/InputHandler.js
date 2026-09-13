@@ -1,35 +1,28 @@
 /**
- * 输入处理类
- * 处理键盘和移动端输入
+ * 输入处理类 - 增强版
+ * 优化移动端触控、滑动反馈、连续移动
  */
 class InputHandler {
     constructor() {
         this.keys = {};
         this.lastMoveTime = 0;
-        this.moveInterval = 150; // 移动间隔（毫秒）
+        this.moveInterval = 130;
         this.enabled = false;
         this.callbacks = {};
         this.isMobile = this.checkMobile();
         this.touchStartX = 0;
         this.touchStartY = 0;
-        this.swipeThreshold = 30; // 滑动触发阈值
-        this.dpadInterval = null; // 长按连续移动定时器
-        this.dpadDirection = null; // 当前按住的方向
+        this.swipeThreshold = 25;
+        this.dpadInterval = null;
+        this.dpadDirection = null;
     }
 
-    /**
-     * 检测是否为移动设备
-     */
     checkMobile() {
-        // 同时检测 UA 和触摸能力
         const ua = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const touch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
         return ua || (touch && window.innerWidth <= 1024);
     }
 
-    /**
-     * 初始化输入处理
-     */
     init() {
         this.setupKeyboard();
         if (this.isMobile) {
@@ -38,16 +31,11 @@ class InputHandler {
         this.setupSwipeControls();
     }
 
-    /**
-     * 设置键盘监听
-     */
     setupKeyboard() {
         document.addEventListener('keydown', (e) => {
             if (!this.enabled) return;
-
             this.keys[e.key] = true;
 
-            // 阻止默认行为（防止页面滚动）
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
                 e.preventDefault();
             }
@@ -58,9 +46,6 @@ class InputHandler {
         });
     }
 
-    /**
-     * 设置移动端控制
-     */
     setupMobileControls() {
         const directions = {
             'btn-up': 'up',
@@ -74,7 +59,6 @@ class InputHandler {
             if (!btn) return;
             const dir = directions[id];
 
-            // touchstart: 立即移动 + 启动长按连续移动
             btn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -84,21 +68,23 @@ class InputHandler {
                 this.startDpadHold();
             }, { passive: false });
 
-            // touchend / touchcancel: 停止长按
             btn.addEventListener('touchend', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 this.stopDpadHold();
             });
 
-            btn.addEventListener('touchcancel', () => {
+            btn.addEventListener('touchcancel', (e) => {
+                e.stopPropagation();
                 this.stopDpadHold();
             });
         });
+
+        // 防止双指缩放
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('gesturechange', (e) => e.preventDefault());
     }
 
-    /**
-     * 启动长按连续移动
-     */
     startDpadHold() {
         this.stopDpadHold();
         this.dpadInterval = setInterval(() => {
@@ -110,9 +96,6 @@ class InputHandler {
         }, this.moveInterval);
     }
 
-    /**
-     * 停止长按连续移动
-     */
     stopDpadHold() {
         if (this.dpadInterval) {
             clearInterval(this.dpadInterval);
@@ -121,9 +104,6 @@ class InputHandler {
         this.dpadDirection = null;
     }
 
-    /**
-     * 设置滑动手势控制（在Canvas上滑动控制方向）
-     */
     setupSwipeControls() {
         const canvas = document.getElementById('game-canvas');
         if (!canvas) return;
@@ -136,7 +116,7 @@ class InputHandler {
 
         canvas.addEventListener('touchmove', (e) => {
             if (!this.enabled) return;
-            e.preventDefault(); // 防止页面滚动
+            e.preventDefault();
         }, { passive: false });
 
         canvas.addEventListener('touchend', (e) => {
@@ -145,7 +125,7 @@ class InputHandler {
             const dy = e.changedTouches[0].clientY - this.touchStartY;
 
             if (Math.abs(dx) < this.swipeThreshold && Math.abs(dy) < this.swipeThreshold) {
-                return; // 滑动距离太小，忽略
+                return;
             }
 
             if (Math.abs(dx) > Math.abs(dy)) {
@@ -156,30 +136,28 @@ class InputHandler {
         }, { passive: true });
     }
 
-    /**
-     * 启用输入
-     */
     enable() {
         this.enabled = true;
-        // 移动端启用时显示虚拟按键
         if (this.isMobile) {
             const mobileControls = document.getElementById('mobile-controls');
-            if (mobileControls) mobileControls.classList.remove('hidden');
+            if (mobileControls) {
+                mobileControls.classList.remove('hidden');
+                mobileControls.classList.add('visible');
+            }
         }
     }
 
-    /**
-     * 禁用输入
-     */
     disable() {
         this.enabled = false;
         this.keys = {};
         this.stopDpadHold();
+        const mobileControls = document.getElementById('mobile-controls');
+        if (mobileControls) {
+            mobileControls.classList.add('hidden');
+            mobileControls.classList.remove('visible');
+        }
     }
 
-    /**
-     * 更新输入状态（每帧调用）
-     */
     update() {
         if (!this.enabled) return;
 
@@ -190,7 +168,6 @@ class InputHandler {
 
         let direction = null;
 
-        // 检查键盘输入
         if (this.keys['ArrowUp'] || this.keys['w'] || this.keys['W']) {
             direction = 'up';
         } else if (this.keys['ArrowDown'] || this.keys['s'] || this.keys['S']) {
@@ -206,22 +183,15 @@ class InputHandler {
         }
     }
 
-    /**
-     * 触发移动
-     */
     triggerMove(direction) {
         const now = Date.now();
         if (now - this.lastMoveTime < this.moveInterval) {
             return;
         }
-
         this.lastMoveTime = now;
         this.trigger('move', direction);
     }
 
-    /**
-     * 注册回调函数
-     */
     on(event, callback) {
         if (!this.callbacks[event]) {
             this.callbacks[event] = [];
@@ -229,9 +199,6 @@ class InputHandler {
         this.callbacks[event].push(callback);
     }
 
-    /**
-     * 触发事件
-     */
     trigger(event, data) {
         if (this.callbacks[event]) {
             this.callbacks[event].forEach(callback => callback(data));
@@ -239,5 +206,4 @@ class InputHandler {
     }
 }
 
-// 导出输入处理实例
 const inputHandler = new InputHandler();

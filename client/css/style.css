@@ -1,28 +1,77 @@
+/* ============================================
+   小鸡快跑 - 酷炫样式
+   ============================================ */
+
 /* 全局样式 */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --primary: #6c5ce7;
+    --primary-light: #a29bfe;
+    --accent: #fd79a8;
+    --accent-warm: #e17055;
+    --bg-dark: #0a0a1a;
+    --bg-card: rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(255, 255, 255, 0.12);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --glow-chicken: #ffd32a;
+    --glow-eagle: #ff4757;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 body {
-    font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-dark);
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+    color: var(--text-primary);
+}
+
+/* 动态星空背景 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(108, 92, 231, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(253, 121, 168, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(0, 206, 209, 0.08) 0%, transparent 50%);
+    z-index: 0;
+    animation: bgPulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes bgPulse {
+    0% { opacity: 0.8; }
+    100% { opacity: 1; }
 }
 
 #game-container {
     width: 100%;
     max-width: 1200px;
     height: 100vh;
+    height: 100dvh;
     position: relative;
     overflow: hidden;
+    z-index: 1;
 }
 
-/* 屏幕样式 */
+/* ============================================
+   屏幕通用样式
+   ============================================ */
 .screen {
     position: absolute;
     top: 0;
@@ -34,79 +83,188 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .screen.hidden {
     display: none;
 }
 
-/* 登录界面 */
+/* ============================================
+   登录界面 - 玻璃拟态风格
+   ============================================ */
 #login-screen {
-    background: rgba(255, 255, 255, 0.95);
+    background: transparent;
     text-align: center;
+    padding-bottom: calc(20px + var(--safe-bottom));
 }
 
 #login-screen h1 {
-    font-size: 3rem;
-    color: #e74c3c;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    font-size: 3.5rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #ffd32a 0%, #ff6b6b 50%, #a29bfe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+    text-shadow: none;
+    filter: drop-shadow(0 0 20px rgba(255, 211, 42, 0.3));
 }
 
-#login-screen p {
-    font-size: 1.2rem;
-    color: #666;
+@keyframes titleGlow {
+    0% { filter: drop-shadow(0 0 20px rgba(255, 211, 42, 0.3)); }
+    100% { filter: drop-shadow(0 0 30px rgba(255, 107, 107, 0.4)); }
+}
+
+#login-screen > p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
     margin-bottom: 30px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+
+/* 玻璃卡片 */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 24px;
 }
 
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.input-group select {
+    padding: 14px 18px;
+    font-size: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    width: 300px;
+    max-width: 90vw;
+    background: rgba(255, 255, 255, 0.06);
+    color: white;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+
+.input-group select:focus {
+    border-color: var(--primary);
+    background-color: rgba(108, 92, 231, 0.1);
+    box-shadow: 0 0 20px rgba(108, 92, 231, 0.15);
+}
+
+.input-group select option {
+    background: #1a1a2e;
+    color: white;
 }
 
 #player-name {
-    padding: 15px 20px;
-    font-size: 1.1rem;
-    border: 2px solid #ddd;
-    border-radius: 25px;
+    padding: 14px 22px;
+    font-size: 1.05rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
     width: 300px;
+    max-width: 90vw;
     text-align: center;
+    background: rgba(255, 255, 255, 0.06);
+    color: white;
     outline: none;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
+    font-weight: 400;
+}
+
+#player-name::placeholder {
+    color: rgba(255, 255, 255, 0.3);
 }
 
 #player-name:focus {
-    border-color: #667eea;
+    border-color: var(--primary);
+    background: rgba(108, 92, 231, 0.08);
+    box-shadow: 0 0 25px rgba(108, 92, 231, 0.15);
 }
 
 #join-btn {
-    padding: 15px 50px;
-    font-size: 1.2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 16px 60px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 14px;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+#join-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+#join-btn:hover::before {
+    left: 100%;
 }
 
 #join-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 40px rgba(108, 92, 231, 0.4);
+}
+
+#join-btn:active {
+    transform: translateY(-1px) scale(0.98);
 }
 
 .game-info {
-    margin-top: 40px;
+    margin-top: 30px;
     text-align: left;
-    background: #f8f9fa;
-    padding: 20px 30px;
-    border-radius: 10px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    padding: 20px 24px;
+    border-radius: 16px;
     max-width: 400px;
+    width: 90vw;
 }
 
 .game-info h3 {
-    color: #333;
-    margin-bottom: 15px;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
 }
 
 .game-info ul {
@@ -115,9 +273,11 @@ body {
 }
 
 .game-info li {
-    padding: 8px 0;
-    color: #555;
-    border-bottom: 1px solid #eee;
+    padding: 7px 0;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    line-height: 1.5;
 }
 
 .game-info li:last-child {
@@ -125,93 +285,126 @@ body {
 }
 
 .game-info li::before {
-    content: "•";
-    color: #667eea;
-    font-weight: bold;
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary-light);
     margin-right: 10px;
+    vertical-align: middle;
 }
 
-/* 等待界面 */
+.game-info li strong {
+    color: var(--primary-light);
+}
+
+/* ============================================
+   等待界面
+   ============================================ */
 #waiting-screen {
-    background: rgba(255, 255, 255, 0.95);
+    background: transparent;
 }
 
 #waiting-screen h2 {
     font-size: 2rem;
-    color: #333;
-    margin-bottom: 30px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #fff 0%, var(--primary-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 #player-count {
-    font-size: 1.5rem;
-    color: #667eea;
+    font-size: 1.4rem;
+    color: var(--primary-light);
     margin-bottom: 30px;
+    font-weight: 600;
 }
 
 #waiting-players {
     display: flex;
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .player-slot {
     width: 80px;
     height: 80px;
-    border-radius: 50%;
-    background: #e9ecef;
+    border-radius: 20px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--glass-border);
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 2rem;
-    color: #adb5bd;
-    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 0.3);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .player-slot.occupied {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, rgba(108, 92, 231, 0.3), rgba(253, 121, 168, 0.2));
+    border-color: var(--primary);
     color: white;
+    animation: slotPop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 25px rgba(108, 92, 231, 0.2);
+}
+
+@keyframes slotPop {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 .waiting-message {
-    font-size: 1.1rem;
-    color: #666;
-    animation: pulse 2s infinite;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    animation: breathe 2s ease-in-out infinite;
     margin-bottom: 20px;
 }
 
+@keyframes breathe {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+}
+
 #start-game-btn {
-    padding: 14px 50px;
-    font-size: 1.2rem;
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    padding: 16px 60px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, var(--accent-warm) 0%, var(--accent) 100%);
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 14px;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    animation: pulse 1.5s infinite;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: btnPulse 2s ease-in-out infinite;
+}
+
+@keyframes btnPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(225, 112, 85, 0.4); }
+    50% { box-shadow: 0 0 0 12px rgba(225, 112, 85, 0); }
 }
 
 #start-game-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(231, 76, 60, 0.5);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 40px rgba(225, 112, 85, 0.4);
 }
 
 #start-game-btn.hidden {
     display: none;
 }
 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
-}
-
-/* 游戏界面 */
+/* ============================================
+   游戏界面
+   ============================================ */
 #game-screen {
-    background: #1a1a2e;
+    background: #0a0a1a;
     padding: 0;
 }
 
@@ -220,128 +413,193 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 15px 20px;
-    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 16px;
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
+    background: rgba(10, 10, 26, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 10;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 #game-info-bar div {
-    color: white;
-    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+#mode-display {
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: rgba(108, 92, 231, 0.2);
+    border: 1px solid rgba(108, 92, 231, 0.3);
+    font-size: 0.8rem;
 }
 
 #role-text {
-    font-weight: bold;
-    padding: 5px 15px;
-    border-radius: 15px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
 }
 
 #role-text.chicken {
-    background: #f1c40f;
-    color: #333;
+    background: linear-gradient(135deg, rgba(255, 211, 42, 0.25), rgba(255, 165, 0, 0.15));
+    color: var(--glow-chicken);
+    border: 1px solid rgba(255, 211, 42, 0.3);
 }
 
 #role-text.eagle {
-    background: #e74c3c;
-    color: white;
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.25), rgba(225, 112, 85, 0.15));
+    color: var(--glow-eagle);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+}
+
+#timer-text {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    transition: color 0.3s ease;
 }
 
 #game-canvas {
     display: block;
-    background: #16213e;
+    background: #0a0a1a;
+    touch-action: none;
 }
 
 #game-hint {
     position: absolute;
-    bottom: 100px;
+    bottom: 120px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(10, 10, 26, 0.9);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     color: white;
-    padding: 15px 30px;
-    border-radius: 25px;
-    font-size: 1.2rem;
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 600;
     z-index: 20;
+    border: 1px solid var(--glass-border);
+    animation: hintSlide 0.3s ease-out;
+    white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* 移动端提示上移，避免与D-pad重叠 */
+@media (max-width: 768px) {
+    #game-hint {
+        bottom: 240px;
+    }
+}
+
+@keyframes hintSlide {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 #game-hint.hidden {
     display: none;
 }
 
-/* 游戏结束遮罩 */
+/* ============================================
+   游戏结束遮罩
+   ============================================ */
 #game-end-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(10, 10, 26, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 15;
-    animation: fadeIn 0.3s ease;
+    animation: overlayIn 0.4s ease-out;
+    padding: 20px;
 }
 
 #game-end-overlay.hidden {
     display: none;
 }
 
-.end-overlay-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #f1c40f;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
-}
-
-.end-overlay-message {
-    font-size: 1.3rem;
-    color: #fff;
-    margin-bottom: 10px;
-}
-
-.end-overlay-detail {
-    font-size: 1.1rem;
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-@keyframes fadeIn {
+@keyframes overlayIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
-/* 移动端控制 - 十字方向键 */
+.end-overlay-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.end-overlay-message {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.end-overlay-detail {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* ============================================
+   移动端控制 - D-Pad
+   ============================================ */
 #mobile-controls {
     position: absolute;
-    bottom: 60px;
+    bottom: calc(60px + var(--safe-bottom));
     left: 50%;
     transform: translateX(-50%);
     z-index: 20;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#mobile-controls.visible {
+    opacity: 1;
+}
+
+#mobile-controls.hidden,
+#mobile-controls:not(.visible) {
+    opacity: 0;
+    pointer-events: none !important;
 }
 
 .dpad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 5px;
-    width: 210px;
-    height: 210px;
+    gap: 6px;
+    width: 180px;
+    height: 180px;
     pointer-events: auto;
 }
 
 .dpad-btn {
-    width: 64px;
-    height: 64px;
-    border-radius: 14px;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
     border: none;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: white;
     font-size: 1.4rem;
     cursor: pointer;
@@ -353,7 +611,8 @@ body {
     align-items: center;
     justify-self: center;
     align-self: center;
-    transition: background 0.1s ease;
+    transition: all 0.12s ease;
+    -webkit-touch-callout: none;
 }
 
 .dpad-btn::after {
@@ -363,38 +622,41 @@ body {
     height: 0;
 }
 
-/* 方向箭头用 CSS 伪元素绘制 */
 .dpad-up::after {
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 14px solid rgba(255,255,255,0.8);
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 12px solid rgba(255,255,255,0.7);
 }
 
 .dpad-down::after {
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 14px solid rgba(255,255,255,0.8);
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 12px solid rgba(255,255,255,0.7);
 }
 
 .dpad-left::after {
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-right: 14px solid rgba(255,255,255,0.8);
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-right: 12px solid rgba(255,255,255,0.7);
 }
 
 .dpad-right::after {
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-left: 14px solid rgba(255,255,255,0.8);
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 12px solid rgba(255,255,255,0.7);
 }
 
 .dpad-center {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
     pointer-events: none;
+    border-color: transparent;
 }
 
 .dpad-btn:active {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(108, 92, 231, 0.5);
+    border-color: rgba(108, 92, 231, 0.6);
+    transform: scale(0.92);
+    box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
 }
 
 .dpad-up {
@@ -422,192 +684,291 @@ body {
     grid-row: 3;
 }
 
-/* 结束界面 */
+/* ============================================
+   结束界面
+   ============================================ */
 #end-screen {
-    background: rgba(0, 0, 0, 0.9);
+    background: transparent;
     color: white;
 }
 
 #result-title {
     font-size: 3rem;
-    margin-bottom: 20px;
+    font-weight: 900;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #ffd32a, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 #result-message {
-    font-size: 1.5rem;
-    margin-bottom: 30px;
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    text-align: center;
+    max-width: 90vw;
 }
 
 #result-details {
-    font-size: 1.1rem;
-    margin-bottom: 40px;
+    font-size: 1rem;
+    margin-bottom: 36px;
     text-align: center;
+    line-height: 1.8;
+    color: var(--text-secondary);
 }
 
 #restart-btn {
-    padding: 15px 50px;
-    font-size: 1.2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 16px 60px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 14px;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 1px;
 }
 
 #restart-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 40px rgba(108, 92, 231, 0.4);
 }
 
-/* 响应式设计 - 手机竖屏 */
+#restart-btn:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+/* ============================================
+   响应式设计 - 手机竖屏
+   ============================================ */
 @media (max-width: 768px) {
     #game-container {
         max-width: 100%;
     }
 
     #login-screen h1 {
-        font-size: 2rem;
-        margin-bottom: 5px;
+        font-size: 2.5rem;
     }
 
-    #login-screen p {
-        font-size: 1rem;
-        margin-bottom: 15px;
+    #login-screen > p {
+        font-size: 0.9rem;
+        margin-bottom: 20px;
     }
 
-    #player-name {
-        width: 250px;
-        padding: 12px 15px;
-        font-size: 1rem;
+    #player-name,
+    .input-group select {
+        width: 260px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
     }
 
     #join-btn {
-        padding: 12px 40px;
+        padding: 14px 50px;
         font-size: 1rem;
     }
 
     .game-info {
-        max-width: 300px;
-        padding: 12px 15px;
+        max-width: 320px;
+        padding: 16px 18px;
         margin-top: 20px;
     }
 
     .game-info h3 {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     .game-info li {
         padding: 5px 0;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
     }
 
     /* 等待界面 */
     #waiting-screen h2 {
-        font-size: 1.5rem;
-        margin-bottom: 15px;
+        font-size: 1.6rem;
     }
 
     #player-count {
-        font-size: 1.2rem;
-        margin-bottom: 15px;
+        font-size: 1.15rem;
     }
 
     .player-slot {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
+        width: 65px;
+        height: 65px;
+        border-radius: 16px;
+        font-size: 1.7rem;
     }
 
     /* 游戏界面 */
     #game-info-bar {
         padding: 8px 12px;
-        font-size: 0.8rem;
     }
 
     #game-info-bar div {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }
 
-    #role-text {
-        padding: 3px 10px;
-        font-size: 0.8rem;
+    #role-text, #mode-display {
+        padding: 3px 8px;
+        font-size: 0.72rem;
     }
 
-    #mobile-controls {
+    #mobile-controls:not(.hidden) {
         display: block !important;
-        bottom: 55px;
+        bottom: calc(50px + var(--safe-bottom));
     }
 
     .dpad {
-        width: 190px;
-        height: 190px;
-        gap: 4px;
+        width: 160px;
+        height: 160px;
+        gap: 5px;
     }
 
     .dpad-btn {
-        width: 56px;
-        height: 56px;
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
     }
 
     /* 结束界面 */
     #result-title {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 
     #result-message {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
     }
 
     #result-details {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     #restart-btn {
-        padding: 12px 40px;
+        padding: 14px 50px;
         font-size: 1rem;
     }
 
     .end-overlay-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
 
     .end-overlay-message {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
     .end-overlay-detail {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 }
 
-/* 手机横屏 */
+/* ============================================
+   超小屏幕
+   ============================================ */
+@media (max-width: 360px) {
+    #login-screen h1 {
+        font-size: 2rem;
+    }
+
+    #player-name,
+    .input-group select {
+        width: 230px;
+        padding: 11px 14px;
+        font-size: 0.9rem;
+    }
+
+    .dpad {
+        width: 145px;
+        height: 145px;
+    }
+
+    .dpad-btn {
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* ============================================
+   手机横屏
+   ============================================ */
 @media (max-height: 500px) and (orientation: landscape) {
     #game-info-bar {
         padding: 4px 12px;
     }
 
     #game-info-bar div {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
     }
 
-    #role-text {
-        padding: 2px 8px;
-        font-size: 0.75rem;
+    #role-text, #mode-display {
+        padding: 2px 6px;
+        font-size: 0.65rem;
     }
 
-    #mobile-controls {
-        bottom: 50px;
+    #mobile-controls:not(.hidden) {
+        display: block !important;
+        bottom: calc(30px + var(--safe-bottom));
     }
 
     .dpad {
-        width: 160px;
-        height: 160px;
+        width: 140px;
+        height: 140px;
         gap: 3px;
     }
 
     .dpad-btn {
-        width: 48px;
-        height: 48px;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
     }
+
+    #game-hint {
+        bottom: 200px;
+        font-size: 0.9rem;
+        padding: 10px 20px;
+    }
+}
+
+/* ============================================
+   横屏锁定提示（可选）
+   ============================================ */
+@media (orientation: landscape) and (max-height: 400px) {
+    #game-info-bar {
+        padding: 3px 10px;
+    }
+}
+
+/* ============================================
+   iPad / 平板适配
+   ============================================ */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .dpad {
+        width: 200px;
+        height: 200px;
+    }
+
+    .dpad-btn {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* ============================================
+   深色滚动条
+   ============================================ */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
 }

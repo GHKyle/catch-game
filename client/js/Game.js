@@ -325,15 +325,28 @@ class Game {
                 delete this.players[data.chickenId];
                 renderer.setPlayers(this.players);
             }
-            // 如果是自己被抓到，显示被捕获提示并禁用输入
-            if (data.chickenId === this.playerId) {
-                renderer.drawHint('你被老鹰抓住了！游戏结束！');
-                inputHandler.disable();
+
+            const isMeCaught = (data.chickenId === this.playerId);
+            const isMeEagle = (data.eagleId === this.playerId);
+
+            if (this.myRole === 'eagle') {
+                // === 老鹰端提示 ===
+                if (isMeEagle) {
+                    renderer.drawHint(`你抓住了小鸡 ${data.chickenName}！剩余 ${data.remainingChickens} 只`);
+                } else {
+                    renderer.drawHint(`队友抓住了小鸡 ${data.chickenName}！剩余 ${data.remainingChickens} 只`);
+                }
             } else {
-                // 显示提示信息
-                renderer.drawHint(`小鸡 ${data.chickenName} 被抓住了！剩余 ${data.remainingChickens} 只小鸡`);
+                // === 小鸡端提示 ===
+                if (isMeCaught) {
+                    renderer.drawHint('你被老鹰抓住了！等待游戏结束...');
+                    inputHandler.disable();
+                } else {
+                    renderer.drawHint(`队友 ${data.chickenName} 被 ${data.eagleName} 抓住了！剩余 ${data.remainingChickens} 只小鸡`);
+                }
             }
-            console.log(`小鸡 ${data.chickenName} 被抓住了。剩余 ${data.remainingChickens} 只小鸡`);
+
+            console.log(`[老鹰捉小鸡] ${data.eagleName} 抓住了 ${data.chickenName}。剩余: ${data.remainingChickens}`);
         });
 
         // 小鸡逃跑（老鹰捉小鸡模式）

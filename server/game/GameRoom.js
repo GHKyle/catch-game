@@ -385,6 +385,8 @@ class GameRoom {
                         this.io.to(this.id).emit('chickenCaptured', {
                             chickenId: chicken.getId(),
                             chickenName: chicken.getName(),
+                            eagleId: eagle.getId(),
+                            eagleName: eagle.getName(),
                             remainingChickens: this.chickens.length
                         });
                         console.log(`Chicken ${chicken.getName()} captured by ${eagle.getName()}. Remaining: ${this.chickens.length}`);
@@ -395,12 +397,6 @@ class GameRoom {
                             return true;
                         }
                         
-                        // 重新投放显示卡
-                        this.spawnRevealCard();
-                        this.io.to(this.id).emit('revealCardSpawned', {
-                            message: '新的显示卡已刷新！',
-                            revealCard: this.revealCard
-                        });
                         break; // 一只老鹰一次只能抓一只小鸡
                     }
                 }

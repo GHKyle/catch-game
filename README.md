@@ -1,4 +1,4 @@
-# 小鸡快跑
+# 小鸡快跑(catch-game)
 
 > **[English](./README_EN.md)** | 简体中文
 
